@@ -1,12 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
+import { Auth } from "./components/auth";
+import "./App.css";
+import Cookies from "universal-cookie";
+import { useState, useRef } from "react";
+import { Chat } from "./components/chat";
+import React, { useEffect } from "react";
+import { AppWrapper } from "./components/AppWrapper";
+const cookies = new Cookies();
+function ChatApp() {
+  const [isAuth, setIsAuth] = useState(cookies.get("auth-token"));
+  const [isInChat, setIsInChat] = useState(null);
+  const [room, setRoom] = useState("");
 
-function App() {
+  if (!isAuth) {
+    return (
+      <AppWrapper
+        isAuth={isAuth}
+        setIsAuth={setIsAuth}
+        setIsInChat={setIsInChat}
+      >
+        <Auth setIsAuth={setIsAuth} />
+      </AppWrapper>
+    );
+  }
+
   return (
-    <div className="App">
-     
-    </div>
+    <AppWrapper isAuth={isAuth} setIsAuth={setIsAuth} setIsInChat={setIsInChat}>
+      {!isInChat ? (
+        <div className="room">
+          <label> Type room name: </label>
+          <input onChange={(e) => setRoom(e.target.value)} />
+          <button
+            onClick={() => {
+              setIsInChat(true);
+            }}
+          >
+            Enter Chat
+          </button>
+        </div>
+      ) : (
+        <Chat room={room} />
+      )}
+    </AppWrapper>
   );
 }
 
-export default App;
+export default ChatApp;
